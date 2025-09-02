@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Bus</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="container mt-5">
+
+    <h1 class="text-center mb-4">Bus Live Location Tracker</h1>
+    <div id="map"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map and set the initial view
+        var map = L.map('map').setView([17.3271, 78.6053], 13);  // Hyderabad coordinates
+
+        // Use OpenStreetMap tiles (Free and no API required)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([17.3101, 78.6861]).addTo(map).bindPopup("Bus Stop 1");
+        L.marker([17.3271, 78.6053]).addTo(map).bindPopup("Bus Stop 2");
+        L.marker([17.3579, 78.5831]).addTo(map).bindPopup("Bus Stop 3");
+        L.marker([17.3221, 78.6441]).addTo(map).bindPopup("Bus Stop 4");
+       
+        // Custom bus icon (replace 'bus_icon.png' with your icon if needed)
+        var busIcon = L.icon({
+            iconUrl: 'bus-station.png',  // Free online bus icon URL
+            iconSize: [40, 40],  // Size of the icon
+            iconAnchor: [20, 40],  // Anchor point of the icon
+            popupAnchor: [0, -40]  // Popup anchor point
+        });
+
+        // Add the bus marker to the map
+        var busMarker = L.marker([17.3221, 78.6441], { icon: busIcon }).addTo(map)
+                         .bindPopup("Current Bus Location").openPopup();
+
+        // Simulate bus movement (for demo purposes)
+        function updateBusLocation() {
+            var newLat = 17.3850 + (Math.random() - 0.5) * 0.01;
+            var newLon = 78.4867 + (Math.random() - 0.5) * 0.01;
+
+            // Update the bus marker position
+            busMarker.setLatLng([newLat, newLon]).update();
+            map.setView([newLat, newLon], 13);
+        }
+
+        // Move the bus every 5 seconds (simulating new positions)
+        setInterval(updateBusLocation, 5000);
+
+        // Optional: Show user's current location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var userLat = position.coords.latitude;
+                var userLon = position.coords.longitude;
+
+                // Add user's location marker
+                var userMarker = L.marker([userLat, userLon]).addTo(map)
+                                  .bindPopup("Your Current Location").openPopup();
+
+                // Center map to user's location
+                map.setView([userLat, userLon], 13);
+            });
+        }
+    </script>
+
+</body>
+</html>
